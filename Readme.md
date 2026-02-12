@@ -53,10 +53,12 @@ ENV FIle:
 ```bash
 MONGO_URI=<MongoDB Connection String>
 JWT_SECRET=<Secret Key untuk JWT>
+FRONTEND_URL=<domain frontend>
+ex: FRONTEND_URL: http://localhost:5173
 ```
 
 #### Frontend
 
 ```bash
-API_URL=<localhost port backend>
+VITE_API_BASE_URL=<localhost port backend>
 ```
