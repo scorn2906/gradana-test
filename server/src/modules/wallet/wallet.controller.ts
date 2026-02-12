@@ -10,9 +10,9 @@ export class WalletController {
   constructor(private walletService: WalletService) {}
 
   @UseGuards(JwtAuthGuard)
-  @Get('dashboard')
+  @Get()
   getDashboard(@CurrentUser() user: AuthUser) {
-    return this.walletService.getDashboard(user.userId);
+    return this.walletService.getWallet(user.userId);
   }
 
   @UseGuards(JwtAuthGuard)

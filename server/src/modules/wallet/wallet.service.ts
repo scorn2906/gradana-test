@@ -15,9 +15,9 @@ export class WalletService {
     private readonly logger: Logger,
   ) {}
 
-  async getDashboard(userId: string) {
+  async getWallet(userId: string) {
     try {
-      this.logger.info(`Fetching wallet user`, { userId });
+      this.logger.info(`Fetching wallet wallet`, { userId });
 
       const wallet = await this.walletModel.findOne({
         userId: new Types.ObjectId(userId),
@@ -32,10 +32,13 @@ export class WalletService {
         userId,
         balance: wallet.balance,
       });
-
+      console.log('topupHistory: ', wallet.topupHistory);
       return {
         balance: wallet.balance,
-        history: wallet.topupHistory,
+        history: wallet.topupHistory.map((item) => ({
+          balance: item.balance,
+          date: item.date,
+        })),
       };
     } catch (error) {
       this.logger.error(`Error fetching wallet`, {
@@ -73,7 +76,7 @@ export class WalletService {
     return {
       balance: wallet.balance,
       topup: {
-        amount,
+        balance: amount,
         date: topup.date,
       },
     };

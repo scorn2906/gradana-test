@@ -8,6 +8,12 @@ async function bootstrap() {
   const app = await NestFactory.create(AppModule, {
     bufferLogs: true,
   });
+  const frontendUrl = process.env.FRONTEND_URL || '*';
+  app.enableCors({
+    origin: frontendUrl,
+    methods: 'GET,HEAD,PUT,PATCH,POST,DELETE,OPTIONS',
+    credentials: true,
+  });
   app.useLogger(app.get(WINSTON_MODULE_PROVIDER));
   app.useGlobalPipes(
     new ValidationPipe({

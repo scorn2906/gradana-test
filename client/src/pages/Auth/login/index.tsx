@@ -1,55 +1,69 @@
 import type { FormProps } from "antd";
 import { Button, Form, Input } from "antd";
+import { useAuthStore } from "../../../store/auth/auth-store";
+import { UseMutationLogin } from "../../../features/auth/api/use-auth-mutation";
+import { Link } from "react-router-dom";
 
 type FieldType = {
-  username?: string;
-  password?: string;
-  remember?: string;
+  email: string;
+  password: string;
 };
 
 const LoginPage = () => {
-  const onFinish: FormProps<FieldType>["onFinish"] = (values) => {
-    console.log("Success:", values);
+  const setAuth = useAuthStore((state) => state.setAuth);
+  const mutationLogin = UseMutationLogin();
+
+  const handleLogin: FormProps<FieldType>["onFinish"] = async (values) => {
+    try {
+      const res = await mutationLogin.mutateAsync({
+        email: values.email,
+        password: values.password,
+      });
+      const { access_token } = res.data;
+      setAuth(access_token);
+    } catch (err) {
+      console.error("Login failed", err);
+    }
   };
 
-  const onFinishFailed: FormProps<FieldType>["onFinishFailed"] = (
-    errorInfo,
-  ) => {
-    console.log("Failed:", errorInfo);
-  };
   return (
-    <Form
-      name="basic"
-      labelCol={{ span: 8 }}
-      wrapperCol={{ span: 16 }}
-      style={{ maxWidth: 600 }}
-      initialValues={{ remember: true }}
-      onFinish={onFinish}
-      onFinishFailed={onFinishFailed}
-      autoComplete="off"
-    >
-      <Form.Item<FieldType>
-        label="Username"
-        name="username"
-        rules={[{ required: true, message: "Please input your username!" }]}
+    <div className="w-full h-screen flex items-center justify-center flex-col">
+      <Form
+        className="border-2 border-gray-300 rounded-lg p-5!"
+        name="basic"
+        initialValues={{ remember: true }}
+        onFinish={handleLogin}
+        autoComplete="off"
       >
-        <Input />
-      </Form.Item>
+        <Form.Item<FieldType>
+          label="Email"
+          name="email"
+          rules={[
+            { required: true, message: "Please input your email!" },
+            { type: "email", message: "Invalid email!" },
+          ]}
+        >
+          <Input type={"email"} />
+        </Form.Item>
 
-      <Form.Item<FieldType>
-        label="Password"
-        name="password"
-        rules={[{ required: true, message: "Please input your password!" }]}
-      >
-        <Input.Password />
-      </Form.Item>
+        <Form.Item<FieldType>
+          label="Password"
+          name="password"
+          rules={[{ required: true, message: "Please input your password!" }]}
+        >
+          <Input.Password />
+        </Form.Item>
 
-      <Form.Item label={null}>
-        <Button type="primary" htmlType="submit">
-          Submit
-        </Button>
-      </Form.Item>
-    </Form>
+        <Form.Item label={null} className="flex justify-center">
+          <Button type="primary" htmlType="submit">
+            Submit
+          </Button>
+        </Form.Item>
+        <Link className="flex items-center justify-center" to="/register">
+          Register
+        </Link>
+      </Form>
+    </div>
   );
 };
 
